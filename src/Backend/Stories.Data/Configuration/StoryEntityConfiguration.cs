@@ -12,7 +12,25 @@ namespace Stories.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Story> builder)
         {
-            throw new NotImplementedException();
+            builder.ToTable("Story");
+
+            builder.Property(s => s.Id)
+                   .ValueGeneratedOnAdd();
+
+            builder.Property(s => s.Title)
+                   .IsRequired()
+                   .HasMaxLength(80)
+                   .IsUnicode(false);
+
+            builder.Property(s => s.Description)
+                   .IsRequired()
+                   .HasMaxLength(300);
+                   
+            builder.Property(s => s.DepartmentId)
+                   .IsRequired();
+
+
+                   
         }
     }
 }
