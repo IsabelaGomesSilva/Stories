@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Stories.Data.Context;
+using Stories.Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(
     x => x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<DepartamentService>();
+builder.Services.AddScoped<StoryService>();
 
 var app = builder.Build();
 
