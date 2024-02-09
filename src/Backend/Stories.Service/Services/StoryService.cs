@@ -22,11 +22,13 @@ namespace Stories.Service.Services
             return (await _context.SaveChangesAsync()) > 0;
         }
 
-        public async Task<bool> Add(StoryDto storyDto)
+        public async Task<(bool isCreated, int isCreatedId)> Add(StoryDto storyDto)
         {
-            _context.Story.Add(new Story {Title = storyDto.Title, Description = storyDto.Description
-                                           , DepartmentId = storyDto.DepartmentId });
-            return await SaveChangesAsync();
+            var story = new Story {Title = storyDto.Title, Description = storyDto.Description
+                                           , DepartmentId = storyDto.DepartmentId };
+            _context.Story.Add(story);
+            
+            return ( await SaveChangesAsync(), story.Id);
         }
         public async Task<IEnumerable<StoryDto>> Get()
         {
@@ -34,19 +36,45 @@ namespace Stories.Service.Services
             return stories.Select(s => new StoryDto { Id = s.Id, Title = s.Title, DepartmentId = s.DepartmentId
                                   ,Description = s.Description}).ToList();   
         }
-        // public async Task<bool> Update(int id, StoryDto s)
-        // {
-        //     var t =  new StoryDto { Id = s.Id, Title = s.Title, DepartmentId = s.DepartmentId
-        //      ,Description = s.Description};
-        //     _context.Story.Where(s => s.Id == id).ExecuteUpdate(exec => exec.SetProperty(b => b.Title, s.Title   );
-        // }
-        public async Task<bool> Delete(int id)
+        public async Task<bool> Update(int id, StoryDto s)
         {
-           
-             _context.Story.Where(s => s.Id == id).ExecuteDelete();
-        
-            return await SaveChangesAsync();
+            return _context.Story.Where(s => s.Id == id)
+                                 .ExecuteUpdate(exec => exec.SetProperty(t => t.Title, s.Title )
+                                                            .SetProperty(d => d.DepartmentId, s.DepartmentId)
+                                                            .SetProperty(d => d.Description, s.Description)) > 0;
+                                                   
         }
-        
+        public async Task<bool> Delete(int id)
+        {  
+           return _context.Story.Where(s => s.Id == id).ExecuteDelete() > 0;  
+        }
+
+        public async Task<(bool isCreated, int isCreatedId)> AddVoted(VoteDto voteDto)
+        {
+
+            var vote = new Vote
+            {
+                Voted = voteDto.Voted,
+                StoryId = voteDto.StoryId,
+                UserId = voteDto.UserId
+            };
+
+            _context.Vote.Add(vote);
+
+           return ( await SaveChangesAsync(), vote.Id);;
+        }
+        public async Task<IEnumerable<VoteDto>> GetVotes()
+        {
+            var votes = await _context.Vote.AsNoTracking().ToListAsync();
+            return votes.Select(s => new VoteDto
+            {
+                Id = s.Id,
+               StoryId= s.StoryId,
+               Voted = s.Voted,
+               UserId= s.UserId
+            }).ToList();
+        }
+
+
     }
 }

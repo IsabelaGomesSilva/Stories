@@ -32,8 +32,11 @@ namespace Stories.API.Controllers
                  Title = storyRequest.Title, DepartmentId = storyRequest.DepartmentId
                  ,Description = storyRequest.Description
              };
-            
-            if(!await _service.Add(storyDto))
+             
+            var result = await _service.Add(storyDto);
+         
+            storyDto.Id = result.isCreatedId;
+            if (!result.isCreated)
                  return BadRequest();
             else
                  return Created($"api/Stories/{storyDto.Id}", storyDto);
@@ -49,26 +52,39 @@ namespace Stories.API.Controllers
             if(!stories.Any()) return NoContent();
             else
             {
-              stories.Select(s => new StoryViewModel { Id = s.Id, DepartmentId = s.DepartmentId
-                             ,Description = s.Description, Title = s.Title}).ToList();
+              stories.Select(s => new StoryViewModel { Id = s.Id, DepartmentId = s.DepartmentId,
+                             Description = s.Description, Title = s.Title}).ToList();
              return Ok(stories); 
             } 
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
-        {
-            var t = await _service.Delete(id);
-           
-           if(! t)  return BadRequest();
-            else
-            {
-              
-             return Ok(); 
-            } 
-           
+        {  
+           if(!await _service.Delete(id))  
+             return BadRequest();
+           else
+             return Ok();
         }
 
+        [HttpPut("{id}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<ActionResult> Put(int id, StoryRequest storyRequest)
+        {
+            StoryDto storyDto = new ()
+            {
+                Title = storyRequest.Title,
+                DepartmentId = storyRequest.DepartmentId,
+                Description = storyRequest.Description
+            };
 
+            if (!await _service.Update(id, storyDto))
+                return BadRequest();
+            else
+                return Ok();
+        }
+
+       
     }
 }
