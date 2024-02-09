@@ -5,7 +5,6 @@ namespace Stories.API.Request
 {
     public class StoryRequest
     {
-       public int Id { get;  private set; }  
        [Required]
        public string Title { get; set; }
        [Required]
