@@ -1,7 +1,7 @@
 
-namespace Stories.Service.Services
+namespace Stories.API.ViewModel
 {
-    public class DepartmentDto
+    public class DepartmentViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }

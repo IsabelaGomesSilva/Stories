@@ -1,8 +1,8 @@
 
 
-namespace Stories.Service.Services
+namespace Stories.API.Request
 {
-    public class VoteDto
+    public class VoteRequest
     {
         public int Id { get; set; }
         public int StoryId { get; set; }
