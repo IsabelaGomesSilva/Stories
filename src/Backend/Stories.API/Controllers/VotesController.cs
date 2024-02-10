@@ -11,28 +11,23 @@ namespace Stories.API.Controllers
     public class VotesController : ControllerBase
     {
         private readonly StoryService _service;
-
-        public VotesController(StoryService service)
-        {
-            _service = service;
-        }
-
+        public VotesController(StoryService service) => _service = service;
+        
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<VoteViewModel>), (int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult> PostVote(VoteRequest voteRequest)
         {
-
             VoteDto voteDto = new()
             {
                 Voted = voteRequest.Voted,
                 UserId = voteRequest.UserId,
                 StoryId = voteRequest.StoryId,
             };
-            var result = await _service.AddVoted(voteDto);
-            voteDto.Id = result.isCreatedId;
+            var (isCreated, isCreatedId) = await _service.AddVoted(voteDto);
+            voteDto.Id = isCreatedId;
             
-            if (!result.isCreated)
+            if (!isCreated)
                 return BadRequest();
             else
                 return Created($"api/Votes/{voteDto.Id}", voteDto);
@@ -47,7 +42,7 @@ namespace Stories.API.Controllers
             if (!votes.Any()) return NoContent();
             else
             {
-                votes.Select(s => new VoteViewModel
+                _ = votes.Select(s => new VoteViewModel
                 {
                     Id = s.Id,
                     Voted = s.Voted,

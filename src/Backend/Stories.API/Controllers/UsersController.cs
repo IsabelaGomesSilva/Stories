@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stories.API.ViewModel;
 using Stories.Service.Services;
@@ -14,11 +10,7 @@ namespace Stories.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserService _userService;
-
-        public UsersController(UserService userService)
-        {
-            _userService = userService;
-        }
+        public UsersController(UserService userService) =>  _userService = userService;
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<UserViewModel>), (int)HttpStatusCode.OK)]
@@ -26,12 +18,11 @@ namespace Stories.API.Controllers
         public async Task<ActionResult> Get()
         {
             var users = await _userService.Get();
-            users.Select(u => new UserViewModel {Id = u.Id, Name = u.Name});
+            _ = users.Select(u => new UserViewModel { Id = u.Id, Name = u.Name }).ToList();
             if(!users.Any())
                  return NoContent();
             else
                  return Ok(users);
-
         }
     }
 }
