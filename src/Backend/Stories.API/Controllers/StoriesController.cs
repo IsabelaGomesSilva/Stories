@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stories.API.Request;
 using Stories.API.ViewModel;
@@ -15,32 +11,26 @@ namespace Stories.API.Controllers
     public class StoriesController : ControllerBase
     {
         private readonly StoryService _service;
-
-        public StoriesController(StoryService storyService)
-        {
-            _service = storyService;
-        }
+        public StoriesController(StoryService storyService) => _service = storyService;
 
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<StoryViewModel>), (int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult> Post(StoryRequest storyRequest)
         {
-       
-             StoryDto  storyDto = new StoryDto 
+             StoryDto  storyDto = new()
              {
-                 Title = storyRequest.Title, DepartmentId = storyRequest.DepartmentId
-                 ,Description = storyRequest.Description
+                 Title = storyRequest.Title, DepartmentId = storyRequest.DepartmentId,
+                 Description = storyRequest.Description
              };
              
-            var result = await _service.Add(storyDto);
+            var (isCreated, isCreatedId) = await _service.Add(storyDto);
          
-            storyDto.Id = result.isCreatedId;
-            if (!result.isCreated)
+            storyDto.Id = isCreatedId;
+            if (!isCreated)
                  return BadRequest();
             else
                  return Created($"api/Stories/{storyDto.Id}", storyDto);
-
         }
 
         [HttpGet]
@@ -52,39 +42,53 @@ namespace Stories.API.Controllers
             if(!stories.Any()) return NoContent();
             else
             {
-              stories.Select(s => new StoryViewModel { Id = s.Id, DepartmentId = s.DepartmentId,
-                             Description = s.Description, Title = s.Title}).ToList();
+                _ = stories.Select(s => new StoryViewModel
+                {
+                    Id = s.Id,
+                    DepartmentId = s.DepartmentId,
+                    Description = s.Description,
+                    Title = s.Title
+                }).ToList();
              return Ok(stories); 
             } 
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
-        {  
-           if(!await _service.Delete(id))  
-             return BadRequest();
-           else
-             return Ok();
-        }
-
-        [HttpPut("{id}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<ActionResult> Put(int id, StoryRequest storyRequest)
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public ActionResult Delete(int id)
         {
-            StoryDto storyDto = new ()
-            {
-                Title = storyRequest.Title,
-                DepartmentId = storyRequest.DepartmentId,
-                Description = storyRequest.Description
-            };
-
-            if (!await _service.Update(id, storyDto))
+            if (_service.Get(id) == null)
+                return NoContent();
+            else if (!_service.Delete(id))
                 return BadRequest();
             else
                 return Ok();
         }
 
-       
+        [HttpPut("{id}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public ActionResult Put(int id, StoryRequest storyRequest)
+        {
+            if (_service.Get(id) == null)
+                return NoContent();
+            else
+            {
+                StoryDto storyDto = new()
+                {
+                    Title = storyRequest.Title,
+                    DepartmentId = storyRequest.DepartmentId,
+                    Description = storyRequest.Description
+                };
+
+                if (!_service.Update(id, storyDto))
+                    return BadRequest();
+                else
+                    return Ok();
+            }
+        }
     }
 }
