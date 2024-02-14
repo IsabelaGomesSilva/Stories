@@ -10,10 +10,10 @@ using Xunit;
 
 namespace Tests.Services
 {
-    public class UserServicesTests
+    public class StoryServiceTests
     {
-        private readonly DbContextOptions<DataContext> optionsBd;
-        public UserServicesTests() =>  optionsBd = new DbContextOptionsBuilder<DataContext>()
+         private readonly DbContextOptions<DataContext> optionsBd;
+        public StoryServiceTests() =>  optionsBd = new DbContextOptionsBuilder<DataContext>()
                                                      .UseInMemoryDatabase(databaseName: "DBSTORIES").Options;
         
         [Fact]
@@ -21,7 +21,7 @@ namespace Tests.Services
         {
            using ( var context = new DataContext(optionsBd))
            {
-            var service =  new UserService(context);
+            var service =  new StoryService(context);
             Assert.Empty(await service.Get());
            }
         }
@@ -31,18 +31,16 @@ namespace Tests.Services
         {
             using(var context = new DataContext(optionsBd))
             {
-                context.User.Add( new User{Name = "Isabela" });
-                context.User.Add( new User{Name = "Julia" });
-                context.User.Add( new User{Name = "Carol" });
-                context.User.Add( new User{Name = "João" });
+                 context.Story.Add( new Story {Title = "The title", Description = "Description",  DepartmentId = 1 });
+                context.Story.Add( new Story {Title = "The title two", Description = "Description two",  DepartmentId = 2 });
                 await context.SaveChangesAsync();
             }
             using(var context = new DataContext(optionsBd))
             {
-                var service = new UserService(context);
-                IEnumerable<UserDto> userDtos = await service.Get();
-                Assert.NotEmpty(userDtos);
-                Assert.Equal(4, userDtos.Count());
+                var service = new StoryService(context);
+                IEnumerable<StoryDto> storyDtos = await service.Get();
+                Assert.NotEmpty(storyDtos);
+                Assert.Equal(2, storyDtos.Count());
             }           
         }
     }

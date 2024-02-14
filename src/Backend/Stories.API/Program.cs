@@ -15,7 +15,7 @@ builder.Services.AddDbContext<DataContext>(
     x => x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<DepartamentService>();
+builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<StoryService>();
 
 var app = builder.Build();

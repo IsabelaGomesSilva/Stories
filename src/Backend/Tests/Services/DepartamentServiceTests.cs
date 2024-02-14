@@ -10,10 +10,10 @@ using Xunit;
 
 namespace Tests.Services
 {
-    public class UserServicesTests
+    public class DepartamentServiceTests
     {
         private readonly DbContextOptions<DataContext> optionsBd;
-        public UserServicesTests() =>  optionsBd = new DbContextOptionsBuilder<DataContext>()
+        public DepartamentServiceTests() =>  optionsBd = new DbContextOptionsBuilder<DataContext>()
                                                      .UseInMemoryDatabase(databaseName: "DBSTORIES").Options;
         
         [Fact]
@@ -21,7 +21,7 @@ namespace Tests.Services
         {
            using ( var context = new DataContext(optionsBd))
            {
-            var service =  new UserService(context);
+            var service =  new DepartmentService(context);
             Assert.Empty(await service.Get());
            }
         }
@@ -31,18 +31,16 @@ namespace Tests.Services
         {
             using(var context = new DataContext(optionsBd))
             {
-                context.User.Add( new User{Name = "Isabela" });
-                context.User.Add( new User{Name = "Julia" });
-                context.User.Add( new User{Name = "Carol" });
-                context.User.Add( new User{Name = "João" });
+                context.Department.Add( new Department{Name = "Financeiro" });
+                context.Department.Add( new Department{Name = "Administrativo" });
                 await context.SaveChangesAsync();
             }
             using(var context = new DataContext(optionsBd))
             {
-                var service = new UserService(context);
-                IEnumerable<UserDto> userDtos = await service.Get();
-                Assert.NotEmpty(userDtos);
-                Assert.Equal(4, userDtos.Count());
+                var service = new DepartmentService(context);
+                IEnumerable<DepartmentDto> departmentDtos = await service.Get();
+                Assert.NotEmpty(departmentDtos);
+                Assert.Equal(2, departmentDtos.Count());
             }           
         }
     }

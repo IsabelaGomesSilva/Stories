@@ -11,10 +11,14 @@ namespace Stories.Service.Services
 {
     public class StoryService
     {
-        private readonly DataContext _context;
+        private readonly DataContext _context; 
         public StoryService(DataContext context) =>  _context = context;
         
         public async Task<bool> SaveChangesAsync() => await _context.SaveChangesAsync() > 0;
+
+        public bool Delete(int id) =>  _context.Story.Where(s => s.Id == id).ExecuteDelete() > 0;
+        
+
         public async Task<(bool isCreated, int isCreatedId)> Add(StoryDto storyDto)
         {
             var story = new Story {Title = storyDto.Title, Description = storyDto.Description,
@@ -35,7 +39,7 @@ namespace Stories.Service.Services
                                                             .SetProperty(d => d.DepartmentId, s.DepartmentId)
                                                             .SetProperty(d => d.Description, s.Description)) > 0;
         }
-        public bool Delete(int id) => _context.Story.Where(s => s.Id == id).ExecuteDelete() > 0;
+       
         public StoryDto Get(int id)
         {
             var story = _context.Story.AsNoTracking().FirstOrDefault(s => s.Id == id);
