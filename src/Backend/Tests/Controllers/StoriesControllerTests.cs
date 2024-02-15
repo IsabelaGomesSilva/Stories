@@ -43,10 +43,11 @@ namespace Tests.Controllers
                 var controller = new StoriesController(new StoryService(context));
                 var resultTest = Assert.IsType<OkObjectResult>( await controller.Get());
                 var stories = resultTest.Value as IEnumerable<StoryDto>;
-                Assert.NotEmpty(stories );
+                Assert.NotEmpty(stories);
                 Assert.Equal(2, stories.Count());
             }           
         }
+        
         [Fact]
         public async void Post_ReturnCreated_When_CreateElement()
         {
@@ -75,7 +76,7 @@ namespace Tests.Controllers
             {
                 var controller = new StoriesController(new StoryService(context));
 
-                Assert.IsType<NoContentResult>( controller.Delete(3)); 
+                Assert.IsType<NoContentResult>( await controller.Delete(3)); 
             }
         }
         [Fact]
@@ -91,9 +92,68 @@ namespace Tests.Controllers
             using (var context = new DataContext(optionsBd))
             {
                 var controller = new StoriesController(new StoryService(context));
-                var t =  controller.Delete(2);
+                var result = await  controller.Delete(2);
 
-                Assert.IsType<OkResult>( t);
+                Assert.IsType<OkResult>( result);
+            }
+        }
+
+        [Fact]
+        public async void Put_ReturnOK_When_UpdateElement()
+        {
+            using (var context = new DataContext(optionsBd))
+            {
+                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
+                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
+                await context.SaveChangesAsync();
+            }
+            using (var context = new DataContext(optionsBd))
+            {
+                var controller = new StoriesController(new StoryService(context));
+                var storyRequest = new StoryRequest { Title = "The title update", Description = "Description update", DepartmentId = 3 };
+
+                 Assert.IsType<OkResult>(controller.Put(1, storyRequest));
+            }
+        }
+        [Fact]
+        public async void Put_ReturnNoContent_When_NoContainElement()
+        {
+            using (var context = new DataContext(optionsBd))
+            {
+                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
+                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new DataContext(optionsBd))
+            {
+                var controller = new StoriesController(new StoryService(context));
+                var storyRequest = new StoryRequest { Title = "The title update", Description = "Description update", DepartmentId = 3 };
+
+                Assert.IsType<NoContentResult>(controller.Put(4, storyRequest));
+            }
+        }
+        [Fact]
+        public async void GetById_ReturnnoContent_When_NoContainElement()
+        {
+            var context = new DataContext(optionsBd);
+            var controller = new StoriesController(new StoryService(context));
+            Assert.IsType<NoContentResult>(await controller.Get(1));
+        }
+        [Fact]
+        public async void GetById_ReturnOK_When_ContainElement()
+        {
+            using (var context = new DataContext(optionsBd))
+            {
+                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
+                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
+                await context.SaveChangesAsync();
+            }
+            using (var context = new DataContext(optionsBd))
+            {
+                var controller = new StoriesController(new StoryService(context));
+                var resultTest = Assert.IsType<OkObjectResult>(await controller.Get(1));
+                Assert.NotNull(resultTest.Value);     
             }
         }
     }

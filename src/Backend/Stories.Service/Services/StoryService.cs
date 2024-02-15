@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,14 @@ namespace Stories.Service.Services
         
         public async Task<bool> SaveChangesAsync() => await _context.SaveChangesAsync() > 0;
 
-        public bool Delete(int id) =>  _context.Story.Where(s => s.Id == id).ExecuteDelete() > 0;
+        public async Task<bool> Delete(int id) 
+        {
+            var story = _context.Story.FindAsync(id ).Result;
+            if (story == null) return false;
+            else 
+               _context.Story.Remove(story);
+               return await SaveChangesAsync();
+        } 
         
 
         public async Task<(bool isCreated, int isCreatedId)> Add(StoryDto storyDto)
@@ -32,12 +40,20 @@ namespace Stories.Service.Services
             return stories.Select(s => new StoryDto { Id = s.Id, Title = s.Title, DepartmentId = s.DepartmentId
                                   ,Description = s.Description}).ToList();   
         }
-        public bool Update(int id, StoryDto s)
+        public async Task<bool> Update(StoryDto storyDto)
         {
-            return _context.Story.Where(s => s.Id == id)
-                                 .ExecuteUpdate(exec => exec.SetProperty(t => t.Title, s.Title)
-                                                            .SetProperty(d => d.DepartmentId, s.DepartmentId)
-                                                            .SetProperty(d => d.Description, s.Description)) > 0;
+            var story = _context.Story.FindAsync(storyDto.Id ).Result;
+            if (story == null)
+            {
+               return false;
+            }
+            story.Description = storyDto.Description;
+            story.Title = storyDto.Title;
+            story.DepartmentId = storyDto.DepartmentId;
+        
+            _context.Story.Update(story);
+           
+            return await SaveChangesAsync();
         }
        
         public StoryDto Get(int id)
