@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stories.API.Controllers;
+using Stories.API.Request;
 using Stories.Data.Context;
 using Stories.Data.Models;
 using Stories.Service.Services;
@@ -33,18 +34,41 @@ namespace Tests.Controllers
         {
             using (var context = new DataContext(optionsBd))
             {
-                context.Department.Add(new Department { Name = "Financeiro" });
-                context.Department.Add(new Department { Name = "Administrativo" });
+                context.Vote.Add(new Vote { Voted = true, StoryId = 1, UserId = 1 });
+                context.Vote.Add(new Vote { Voted = true, UserId = 1, StoryId = 1 });
                 await context.SaveChangesAsync();
             }
             using (var context = new DataContext(optionsBd))
             {
-                var controller = new DepartmentsController(new DepartmentService(context));
+                var controller = new VotesController(new StoryService(context));
                 var resultTest = Assert.IsType<OkObjectResult>(await controller.Get());
-                var departments = resultTest.Value as IEnumerable<DepartmentDto>;
-                Assert.NotEmpty(departments);
-                Assert.Equal(2, departments.Count());
+                var votes = resultTest.Value as IEnumerable<VoteDto>;
+                Assert.NotEmpty(votes);
+                Assert.Equal(2, votes.Count());
             }
         }
+        [Fact]
+        public async void Post_RetunCreated_When_CreatedElement()
+        {
+            using(var context = new DataContext(optionsBd))
+            {
+                var voted = new VoteRequest { Voted = true, StoryId = 1, UserId = 1 };
+                var controller = new VotesController(new StoryService(context));
+                 Assert.IsType<CreatedResult>(await controller.Post(voted));
+            }
+        }
+        //[Fact]
+        //public async void Post_RetunBadRequest_When_CreatedElement()
+        //{
+        //    using (var context = new DataContext(optionsBd))
+        //    {
+        //    var voted = new VoteRequest { Voted = true, StoryId = null, UserId = 1 };
+        //        var controller = new VotesController(new StoryService(context));
+        //        Assert.IsType<BadRequestResult>(await controller.Post(null));
+        //    }
+        //}
+
+
+
     }
 }
