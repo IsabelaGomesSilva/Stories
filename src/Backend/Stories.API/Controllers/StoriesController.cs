@@ -52,16 +52,35 @@ namespace Stories.API.Controllers
              return Ok(stories); 
             } 
         }
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(IEnumerable<StoryViewModel>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public  ActionResult Get(int id)
+        {
+            var story =  _service.Get(id);
+            if(story == null ) return NoContent();
+            else
+            {
+                StoryViewModel storyViewModel = new ()
+                {
+                    Id = story.Id,
+                    DepartmentId = story.DepartmentId,
+                    Description = story.Description,
+                    Title = story.Title
+                };
+             return Ok(storyViewModel); 
+            } 
+        }
 
         [HttpDelete("{id}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             if (_service.Get(id) == null)
                 return NoContent();
-            else if (!_service.Delete(id))
+            else if (! await _service.Delete(id))
                 return BadRequest();
             else
                 return Ok();
@@ -79,12 +98,13 @@ namespace Stories.API.Controllers
             {
                 StoryDto storyDto = new()
                 {
+                    Id = id,
                     Title = storyRequest.Title,
                     DepartmentId = storyRequest.DepartmentId,
                     Description = storyRequest.Description
                 };
 
-                if (!_service.Update(id, storyDto))
+                if (!_service.Update(storyDto).Result)
                     return BadRequest();
                 else
                     return Ok();
