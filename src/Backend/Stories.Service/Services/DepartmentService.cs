@@ -7,11 +7,11 @@ using Stories.Data.Context;
 
 namespace Stories.Service.Services
 {
-    public class DepartamentService
+    public class DepartmentService
     {
         private readonly DataContext _context;
 
-        public DepartamentService(DataContext context)
+        public DepartmentService(DataContext context)
         {
             _context = context;
         }

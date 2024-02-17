@@ -9,8 +9,8 @@ namespace Stories.API.Controllers
     [Route("api/[controller]")]
     public class DepartmentsController : ControllerBase
     {
-        private readonly DepartamentService _service;
-        public DepartmentsController(DepartamentService service) => _service = service;
+        private readonly DepartmentService _service;
+        public DepartmentsController(DepartmentService service) => _service = service;
         
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<DepartmentViewModel>), (int)HttpStatusCode.OK)]

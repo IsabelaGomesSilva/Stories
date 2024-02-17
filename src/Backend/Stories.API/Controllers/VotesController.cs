@@ -16,7 +16,7 @@ namespace Stories.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<VoteViewModel>), (int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> PostVote(VoteRequest voteRequest)
+        public async Task<ActionResult> Post(VoteRequest voteRequest)
         {
             VoteDto voteDto = new()
             {
@@ -36,7 +36,7 @@ namespace Stories.API.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<VoteViewModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<ActionResult> GetVotes()
+        public async Task<ActionResult> Get()
         {
             var votes = await _service.GetVotes();
             if (!votes.Any()) return NoContent();
