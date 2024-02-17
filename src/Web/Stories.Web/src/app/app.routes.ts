@@ -1,3 +1,5 @@
 import { Routes } from '@angular/router';
-
-export const routes: Routes = [];
+import { StoryComponent } from './view/story/story.component';
+export const routes: Routes = [
+  {path:'', component: StoryComponent}
+];
