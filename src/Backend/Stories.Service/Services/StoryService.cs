@@ -37,23 +37,30 @@ namespace Stories.Service.Services
         public async Task<IEnumerable<StoryDto>> Get()
         {
             var stories = await  _context.Story.AsNoTracking().ToListAsync();
-            return stories.Select(s => new StoryDto { Id = s.Id, Title = s.Title, DepartmentId = s.DepartmentId
-                                  ,Description = s.Description}).ToList();   
+            return stories.Select(s => new StoryDto 
+            {   Id = s.Id, 
+                Title = s.Title, 
+                DepartmentId = s.DepartmentId,
+                Description = s.Description
+            }).ToList();   
         }
         public async Task<bool> Update(StoryDto storyDto)
         {
-            var story = _context.Story.FindAsync(storyDto.Id ).Result;
+            var story = _context.Story.FindAsync(storyDto.Id).Result;
             if (story == null)
             {
                return false;
             }
-            story.Description = storyDto.Description;
-            story.Title = storyDto.Title;
-            story.DepartmentId = storyDto.DepartmentId;
-        
-            _context.Story.Update(story);
-           
-            return await SaveChangesAsync();
+            else
+            {
+                story.Description = storyDto.Description;
+                story.Title = storyDto.Title;
+                story.DepartmentId = storyDto.DepartmentId;
+
+                _context.Story.Update(story);
+
+                return await SaveChangesAsync();
+            }
         }
        
         public StoryDto Get(int id)

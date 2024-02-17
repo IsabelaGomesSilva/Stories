@@ -55,7 +55,7 @@ namespace Stories.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(IEnumerable<StoryViewModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<ActionResult> Get(int id)
+        public  ActionResult Get(int id)
         {
             var story =  _service.Get(id);
             if(story == null ) return NoContent();

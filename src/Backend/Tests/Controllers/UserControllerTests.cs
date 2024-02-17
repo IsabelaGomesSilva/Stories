@@ -11,13 +11,14 @@ namespace Tests.Controllers
     {
         private readonly DbContextOptions<DataContext> optionsBd;
         public UserControllerTests() =>  optionsBd = new DbContextOptionsBuilder<DataContext>()
-                                                     .UseInMemoryDatabase(databaseName: "DBSTORIES").Options;
+                                                     .UseInMemoryDatabase(databaseName: "User").Options;
         
         [Fact]
         public async void Get_ReturnnoContent_When_NocontainsElements()
         {
-            var context = new DataContext(optionsBd);
-            var controller = new UsersController(new UserService(context));
+            DataContext context = new(optionsBd);
+            context.Database.EnsureDeleted();
+            UsersController controller = new(new UserService(context));
             Assert.IsType<NoContentResult>( await controller.Get());
             
         }
@@ -25,21 +26,20 @@ namespace Tests.Controllers
         [Fact]
         public async void Get_ReturnOK_When_ContainsElements()
         {
-            using(var context = new DataContext(optionsBd))
+            using(DataContext context = new(optionsBd))
             {
-                context.User.Add( new User{Name = "Isabela" });
-                context.User.Add( new User{Name = "Julia" });
-                context.User.Add( new User{Name = "Carol" });
-                context.User.Add( new User{Name = "João" });
+                context.Database.EnsureDeleted();
+                context.User.Add( new User{Name = "Isabela"});
+                context.User.Add( new User{Name = "Julia"});
                 await context.SaveChangesAsync();
             }
-            using(var context = new DataContext(optionsBd))
+            using (DataContext context = new(optionsBd))
             {
-                var controller = new UsersController(new UserService(context));
+                UsersController controller = new(new UserService(context));
                 var resultTest = Assert.IsType<OkObjectResult>( await controller.Get());
                 var users = resultTest.Value as IEnumerable<UserDto>;
                 Assert.NotEmpty(users);
-                Assert.Equal(4,users.Count());
+                Assert.Equal(2,users.Count());
             }           
         }
     }

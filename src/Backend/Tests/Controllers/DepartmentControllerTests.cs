@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stories.API.Controllers;
 using Stories.Data.Context;
 using Stories.Data.Models;
 using Stories.Service.Services;
-using Xunit;
 
 namespace Tests.Controllers
 {
@@ -16,30 +11,36 @@ namespace Tests.Controllers
     {
         private readonly DbContextOptions<DataContext> optionsBd;
         public DepartmentControllerTests() =>  optionsBd = new DbContextOptionsBuilder<DataContext>()
-                                                     .UseInMemoryDatabase(databaseName: "DBSTORIES").Options;
+                                                     .UseInMemoryDatabase(databaseName: "Department").Options;
         
         [Fact]
         public async void Get_ReturnnoContent_When_NocontainsElements()
         {
-          using(  var context = new DataContext(optionsBd))
-          {
-            var controller = new DepartmentsController(new DepartmentService(context));
-            Assert.IsType<NoContentResult>( await controller.Get());
-          }   
+            using(DataContext context = new(optionsBd))
+            { 
+                context.Database.EnsureDeleted();
+            }
+
+            using (DataContext context = new(optionsBd))
+            {
+                DepartmentsController controller = new(new DepartmentService(context));
+                Assert.IsType<NoContentResult>(await controller.Get());
+            }
         }
 
         [Fact]
         public async void Get_ReturnOK_When_ContainsElements()
         {
-            using(var context = new DataContext(optionsBd))
+            using(DataContext context = new(optionsBd))
             {
+                context.Database.EnsureDeleted();
                 context.Department.Add( new Department {Name = "Financeiro" });
                 context.Department.Add( new Department {Name = "Administrativo" });
                 await context.SaveChangesAsync();
             }
-            using(var context = new DataContext(optionsBd))
+            using(DataContext context = new(optionsBd))
             {
-                var controller = new DepartmentsController(new DepartmentService(context));
+                DepartmentsController controller = new(new DepartmentService(context));
                 var resultTest = Assert.IsType<OkObjectResult>( await controller.Get());
                 var departments = resultTest.Value as IEnumerable<DepartmentDto>;
                 Assert.NotEmpty(departments);

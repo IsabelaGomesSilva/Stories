@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Stories.Data.Context;
 using Stories.Data.Models;
 using Stories.Service.Services;
-using Xunit;
 
 namespace Tests.Services
 {
@@ -14,30 +9,31 @@ namespace Tests.Services
     {
         private readonly DbContextOptions<DataContext> optionsBd;
         public DepartamentServiceTests() =>  optionsBd = new DbContextOptionsBuilder<DataContext>()
-                                                     .UseInMemoryDatabase(databaseName: "DBSTORIES").Options;
+                                                     .UseInMemoryDatabase(databaseName: "ServiceDepartament").Options;
         
         [Fact]
         public async void Get_ReturnNoList_When_NocontainsElements()
         {
-           using ( var context = new DataContext(optionsBd))
-           {
-            var service =  new DepartmentService(context);
-            Assert.Empty(await service.Get());
-           }
+            using (DataContext context = new(optionsBd))
+            {
+                context.Database.EnsureDeleted();
+                Assert.Empty(await new DepartmentService(context).Get());
+            }
         }
 
         [Fact]
         public async void Get_ReturnList_When_ContainsElements()
         {
-            using(var context = new DataContext(optionsBd))
+            using (DataContext context = new(optionsBd))
             {
+                context.Database.EnsureDeleted();
                 context.Department.Add( new Department{Name = "Financeiro" });
                 context.Department.Add( new Department{Name = "Administrativo" });
                 await context.SaveChangesAsync();
             }
             using(var context = new DataContext(optionsBd))
             {
-                var service = new DepartmentService(context);
+                DepartmentService service = new(context);
                 IEnumerable<DepartmentDto> departmentDtos = await service.Get();
                 Assert.NotEmpty(departmentDtos);
                 Assert.Equal(2, departmentDtos.Count());
