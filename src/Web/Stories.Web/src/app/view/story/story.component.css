@@ -11,6 +11,12 @@ table {
   margin: 10px 8px 12px 0;
   margin-left: 40%;
 }
+.description{
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 
 
