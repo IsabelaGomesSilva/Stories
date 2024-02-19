@@ -1,6 +1,6 @@
 export class storyViewModel{
-     Id!: Number;
-     Title!: string;
-     Description!: string;
-     DepartmentId!: Number;
+     id!: Number;
+     title!: string;
+     description!: string;
+     departmentId!: Number;
 }
