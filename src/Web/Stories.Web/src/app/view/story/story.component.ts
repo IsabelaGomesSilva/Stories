@@ -3,14 +3,13 @@ import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { StoryService } from '../../service/story/story.service';
 import { storyViewModel } from '../../viewModel/storyViewModel';
-import { DepartmentService } from '../../service/department/department.service';
-import { response } from 'express';
-import { departmentViewModel } from '../../viewModel/departmentViewModel';
+import {MatButtonModule} from '@angular/material/button';
+
 
 @Component({
   selector: 'app-story',
   standalone: true,
-  imports: [MatTableModule, MatPaginatorModule],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule],
   templateUrl: './story.component.html',
   styleUrl: './story.component.css'
 })
@@ -24,7 +23,6 @@ export class StoryComponent implements OnInit, AfterViewInit {
 
   ngOnInit(){
       this.service.Get().subscribe((response: storyViewModel[])  => {
-        console.log(response);
         if(response)
         {
           this.dataSource.data = response;
@@ -32,7 +30,6 @@ export class StoryComponent implements OnInit, AfterViewInit {
         }
       } ,error => {
       console.error('Erro ao obter cidades:', error);});
-      console.log(this.dataSource);
    }
    ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
