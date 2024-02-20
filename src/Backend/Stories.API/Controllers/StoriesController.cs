@@ -46,6 +46,7 @@ namespace Stories.API.Controllers
                 {
                     Id = s.Id,
                     DepartmentId = s.DepartmentId,
+                    
                     Description = s.Description,
                     Title = s.Title
                 }).ToList();

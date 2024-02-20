@@ -29,6 +29,11 @@ namespace Stories.Data.Configuration
             builder.Property(s => s.DepartmentId)
                    .IsRequired();
 
+            builder.HasOne(s => s.Department)
+                  .WithMany()
+                  .HasForeignKey(s => s.DepartmentId)
+                  .HasConstraintName("FK_Story_Department");
+
 
                    
         }

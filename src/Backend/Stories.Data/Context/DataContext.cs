@@ -25,6 +25,8 @@ namespace Stories.Data.Context
              modelBuilder.ApplyConfiguration( new StoryEntityConfiguration());
              modelBuilder.ApplyConfiguration( new UserEntityConfiguration());
              modelBuilder.ApplyConfiguration( new VoteEntityConfiguration());
+
+            
         }
 
 

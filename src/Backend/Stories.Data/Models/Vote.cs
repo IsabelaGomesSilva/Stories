@@ -8,8 +8,10 @@ namespace Stories.Data.Models
     public class Vote
     {
         public int Id { get; private set; }
+        public bool Voted { get; set; }
         public int StoryId { get; set; }
         public int UserId { get; set; }
-        public bool Voted { get; set; }
+        public Story Story {get; }
+        public User User {get;}
     }
 }
