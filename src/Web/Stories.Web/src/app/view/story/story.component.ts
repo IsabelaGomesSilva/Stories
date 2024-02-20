@@ -4,9 +4,8 @@ import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { StoryService } from '../../service/story/story.service';
 import { storyViewModel } from '../../viewModel/storyViewModel';
 import {MatButtonModule} from '@angular/material/button';
-import { DepartmentService } from '../../service/department/department.service';
-import { departmentViewModel } from '../../viewModel/departmentViewModel';
-
+import { MatDialog } from '@angular/material/dialog';
+import { AddStoryComponent } from './dialogStory/add-story/add-story.component';
 
 @Component({
   selector: 'app-story',
@@ -16,35 +15,31 @@ import { departmentViewModel } from '../../viewModel/departmentViewModel';
   styleUrl: './story.component.css'
 })
 export class StoryComponent implements OnInit, AfterViewInit {
-  constructor (private storyService: StoryService, private departmentsService: DepartmentService ) {}
+  constructor (private storyService: StoryService, private dialog: MatDialog) {}
   
   displayedColumns: string[] = ['Id', 'Title', 'Description', 'Department'];
  
   dataSource: MatTableDataSource<storyViewModel> = new MatTableDataSource<storyViewModel>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  departments!: departmentViewModel[];
 
   ngOnInit(){
-    this.getDepartments();
-    
     this.storyService.Get().subscribe((response: storyViewModel[])  => {
         if(response)
         {
           this.dataSource.data = response;
           this.ngAfterViewInit();
         }
-      } ,error => {
-      console.error('Erro ao obter histórias:', error);});
-
-      
+      } ,error => { console.error('Erro ao obter histórias:', error);});
    }
-   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
+
+  ngAfterViewInit(): void { this.dataSource.paginator = this.paginator; }
+  
+  openDialog(enterAnimationDuration: string, exitAnimationDuration: string): void {
+    this.dialog.open(AddStoryComponent, {
+    
+      enterAnimationDuration,
+      exitAnimationDuration,
+    });
   }
-  getDepartments() {
-    this.departmentsService.Get().subscribe((response: departmentViewModel[] )  => {this.departments = response},error => {
-      console.error('Erro ao obter departaments:', error);} );
-      console.log(this.departments)
-     
-  }
+ 
 }

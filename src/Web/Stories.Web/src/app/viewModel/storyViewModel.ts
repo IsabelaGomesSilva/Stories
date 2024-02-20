@@ -3,4 +3,5 @@ export class storyViewModel{
      title!: string;
      description!: string;
      departmentId!: Number;
+     departmentName!: string;
 }

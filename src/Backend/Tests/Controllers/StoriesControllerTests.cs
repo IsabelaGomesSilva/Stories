@@ -60,7 +60,6 @@ namespace Tests.Controllers
                 Assert.IsType<CreatedResult>(await controller.Post(storyRequest));  
             }
         }
-
         [Fact]
         public async void Delete_ReturnNoContent_When_NoContainElement()
         {
@@ -94,7 +93,6 @@ namespace Tests.Controllers
                 Assert.IsType<OkResult>(await controller.Delete(1));
             }
         }
-
         [Fact]
         public async void Put_ReturnOK_When_UpdateElement()
         {
@@ -113,7 +111,6 @@ namespace Tests.Controllers
                 Assert.IsType<OkResult>(controller.Put(1, storyRequest));
             }
         }
-
         [Fact]
         public void Put_ReturnNoContent_When_NoContainElement()
         {
@@ -124,7 +121,6 @@ namespace Tests.Controllers
                 Assert.IsType<NoContentResult>(controller.Put(4, storyRequest));
             }
         }
-
         [Fact]
         public  void GetById_ReturnnoContent_When_NoContainElement()
         {
@@ -133,7 +129,6 @@ namespace Tests.Controllers
             StoriesController controller = new(new StoryService(context));
             Assert.IsType<NoContentResult>(controller.Get(1));
         }
-
         [Fact]
         public async void GetById_ReturnOK_When_ContainElement()
         {
