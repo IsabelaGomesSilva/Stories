@@ -24,11 +24,16 @@ namespace Tests.Services
         [Fact]
         public async void Get_ReturnList_When_ContainsElements()
         {
-            using(DataContext context = new(optionsBd))
+             using(DataContext context = new(optionsBd))
             {
                 context.Database.EnsureDeleted();
+                context.Department.Add(new Department{Name = "Financeiro"});
+                await context.SaveChangesAsync();
+            }
+            using(DataContext context = new(optionsBd))
+            {
                 context.Story.Add( new Story {Title = "The title", Description = "Description",  DepartmentId = 1 });
-                context.Story.Add( new Story {Title = "The title two", Description = "Description two",  DepartmentId = 2 });
+                context.Story.Add( new Story {Title = "The title two", Description = "Description two",  DepartmentId = 1 });
                 await context.SaveChangesAsync();
             }
             using(DataContext context = new(optionsBd))
@@ -50,14 +55,19 @@ namespace Tests.Services
         [Fact]
         public async void GetById_ReturnOk_When_ContainElement()
         {
-            using (DataContext context = new(optionsBd))
+            using(DataContext context = new(optionsBd))
             {
                 context.Database.EnsureDeleted();
-                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
-                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
+                context.Department.Add(new Department{Name = "Financeiro"});
                 await context.SaveChangesAsync();
             }
             using (DataContext context = new(optionsBd))
+            {
+                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
+                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 1 });
+                await context.SaveChangesAsync();
+            }
+            using (DataContext context = new(optionsBd)) 
             {
                 Assert.NotNull(Assert.IsType<StoryDto>(new StoryService(context).Get(1)));
             }
@@ -68,23 +78,23 @@ namespace Tests.Services
             using (DataContext context = new(optionsBd))
             {
                 context.Database.EnsureDeleted();
-                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
-                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
-                await context.SaveChangesAsync();
-            }
-            using (DataContext context = new(optionsBd))
-            {
                 Assert.False(await new StoryService(context).Delete(3));
             }
         }
         [Fact]
         public async void Delete_ReturnTrue_When_ContainElementAndDelete()
         {
+            using(DataContext context = new(optionsBd))
+            {
+                context.Database.EnsureDeleted();
+                context.Department.Add(new Department{Name = "Financeiro"});
+                await context.SaveChangesAsync();
+            }
             using (DataContext context = new(optionsBd))
             {
                 context.Database.EnsureDeleted();
                 context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
-                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
+                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 1 });
                 await context.SaveChangesAsync();
             }
             using (DataContext context = new(optionsBd))
@@ -95,46 +105,38 @@ namespace Tests.Services
         [Fact]
         public async void Add_ReturnTrue_When_add()
         {
+             using(DataContext context = new(optionsBd))
+            {
+                context.Database.EnsureDeleted();
+                context.Department.Add(new Department{Name = "Financeiro"});
+                await context.SaveChangesAsync();
+            }
             using (DataContext context = new(optionsBd))
             {
-                StoryDto storyDto = new (){ Title = "The title two", Description = "Description two", DepartmentId = 2 };
+                StoryDto storyDto = new (){ Title = "The title two", Description = "Description two", DepartmentId = 1 };
                 var (isCreated, idCreated) = await new StoryService(context).Add(storyDto);
                 Assert.True(isCreated);
                 Assert.NotEqual(0,idCreated);
             }
         }
-        //[Fact]
-        //public async void Add_ReturnFalse_When_NotAdd()
-        //{
-        //    using (var context = new DataContext(optionsBd))
-        //    {
-        //        var storyDto = new StoryDto {Title= "", Description = "Description two", DepartmentId = 2 };
-        //        var (isCreated, idCreated) = await new StoryService(context).Add(storyDto);
-        //        Assert.False(isCreated);
-        //        Assert.Equal(0, idCreated);
-        //    }
-        //}
         [Fact]
         public async void Upadate_ReturnTrue_When_UpdateElement()
         {
-            var options = new DbContextOptionsBuilder<DataContext>()
-                                                     .UseInMemoryDatabase(databaseName: "ServiceUpdate").Options;
-            using (DataContext context = new(options))
+             using(DataContext context = new(optionsBd))
             {
-                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
+                context.Database.EnsureDeleted();
+                context.Department.Add(new Department{Name = "Financeiro"});
+                await context.SaveChangesAsync();
+            }                                         
+            using (DataContext context = new(optionsBd))
+            {
                 context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
                 await context.SaveChangesAsync();
             }   
-            using (DataContext context = new(options))
+            using (DataContext context = new(optionsBd))
             {
-                StoryDto story = new() 
-                {  
-                    Id = 1, 
-                    Title = "The title update", 
-                    Description = "Description update", 
-                    DepartmentId = 2 
-                };
-
+                StoryDto story = new() {  Id = 1, Title = "The title update", 
+                                          Description = "Description update", DepartmentId = 1 };
                 Assert.True(await new StoryService(context).Update(story));
             }
         }
@@ -143,38 +145,27 @@ namespace Tests.Services
         {
             using (DataContext context = new(optionsBd))
             {
-                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
-                await context.SaveChangesAsync();
-            }
-            using (DataContext context = new(optionsBd))
-            {
-                StoryDto storyDto = new()
-                {
-                    Id = 50,
-                    Title = "The title update",
-                    Description = "Description update",
-                    DepartmentId = 2
-                };
+                StoryDto storyDto = new(){Id = 50, Title = "The title update",
+                                          Description = "Description update", DepartmentId = 2};
                 Assert.False(await new StoryService(context).Update(storyDto));
             }
         }
         [Fact]
         public async void AddVotes_ReturnTrue_When_add()
         {
-            using (DataContext context = new(optionsBd))
+            using (DataContext context = new(optionsBd) )
             {
-                VoteDto voteDto = new() { StoryId = 1, UserId = 2, Voted = false };
-                var (isCreated, idCreated) = await new StoryService(context).AddVoted(voteDto);
-                Assert.True(isCreated);
-                Assert.NotEqual(0, idCreated);
+                context.Database.EnsureDeleted();  
+                context.Department.Add(new Department{Name = "Financeiro"});
+                  await context.SaveChangesAsync(); 
+                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
+                context.User.Add(new User{Name = "Carlos Silva"});
+                  await context.SaveChangesAsync();
+
             }
-        }
-        [Fact]
-        public async void AddVotes_ReturnFalse_When_NoAdd()
-        {
             using (DataContext context = new(optionsBd))
             {
-                VoteDto voteDto = new() { StoryId = 1, UserId = 2, Voted = false };
+                VoteDto voteDto = new() { StoryId = 1, UserId = 1, Voted = false };
                 var (isCreated, idCreated) = await new StoryService(context).AddVoted(voteDto);
                 Assert.True(isCreated);
                 Assert.NotEqual(0, idCreated);
@@ -183,11 +174,20 @@ namespace Tests.Services
         [Fact]
         public async void GetVotes_ReturnVotes_When_ContainElements()
         {
+             using (DataContext context = new(optionsBd) )
+            {
+                context.Database.EnsureDeleted();  
+                context.Department.Add(new Department{Name = "Financeiro"});
+                  await context.SaveChangesAsync(); 
+                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
+                context.User.Add(new User{Name = "João Silva"});
+                  await context.SaveChangesAsync();
+
+            }
             using (DataContext context = new(optionsBd))
             {
-                context.Database.EnsureDeleted();
-                context.Vote.Add(new Vote { StoryId = 1, UserId = 2, Voted = false });
-                context.Vote.Add(new Vote { StoryId = 2, UserId = 3, Voted = true });
+                context.Vote.Add(new Vote { StoryId = 1, UserId = 1, Voted = false });
+                context.Vote.Add(new Vote { StoryId = 1, UserId = 1, Voted = true });
                 await context.SaveChangesAsync();
             }
             using (DataContext context = new(optionsBd))
