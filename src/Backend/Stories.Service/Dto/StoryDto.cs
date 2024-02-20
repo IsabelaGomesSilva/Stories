@@ -7,5 +7,6 @@ namespace Stories.Service.Services
        public string Title { get; set; }
        public string Description { get; set; }
        public int DepartmentId { get; set; }
+       public string DepartmentName {get; set;}
     }
 }

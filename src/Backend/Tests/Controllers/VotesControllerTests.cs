@@ -28,9 +28,17 @@ namespace Tests.Controllers
         [Fact]
         public async void Get_ReturnOK_When_ContainsElements()
         {
+             using (DataContext context = new(optionsBd) )
+            {
+                context.Database.EnsureDeleted();  
+                context.Department.Add(new Department{Name = "Financeiro"});
+                  await context.SaveChangesAsync(); 
+                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
+                context.User.Add(new User{Name = "Carlos Silva"});
+                  await context.SaveChangesAsync();
+            }
             using (DataContext context = new(optionsBd))
             {
-                context.Database.EnsureDeleted();
                 context.Vote.Add(new Vote { Voted = true, StoryId = 1, UserId = 1 });
                 context.Vote.Add(new Vote { Voted = true, UserId = 1, StoryId = 1 });
                 await context.SaveChangesAsync();
@@ -48,27 +56,21 @@ namespace Tests.Controllers
         [Fact]
         public async void Post_RetunCreated_When_CreatedElement()
         {
+             using (DataContext context = new(optionsBd) )
+            {
+                context.Database.EnsureDeleted();  
+                context.Department.Add(new Department{Name = "Financeiro"});
+                  await context.SaveChangesAsync(); 
+                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
+                context.User.Add(new User{Name = "Carlos Silva"});
+                  await context.SaveChangesAsync();
+            }
             using (DataContext context = new(optionsBd))
             {
                 VoteRequest voted = new() { Voted = true, StoryId = 1, UserId = 1 };
-                context.Database.EnsureDeleted();
                 VotesController controller = new(new StoryService(context));
                 Assert.IsType<CreatedResult>(await controller.Post(voted));
             }
         }
-
-        //[Fact]
-        //public async void Post_RetunBadRequest_When_CreatedElement()
-        //{
-        //    using (var context = new DataContext(optionsBd))
-        //    {
-        //    var voted = new VoteRequest { Voted = true, StoryId = null, UserId = 1 };
-        //        var controller = new VotesController(new StoryService(context));
-        //        Assert.IsType<BadRequestResult>(await controller.Post(null));
-        //    }
-        //}
-
-
-
     }
 }
