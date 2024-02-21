@@ -20,8 +20,7 @@ namespace Tests.Controllers
             DataContext context = new(optionsBd);
             context.Database.EnsureDeleted();
             StoriesController controller = new(new StoryService(context));
-            Assert.IsType<NoContentResult>( await controller.Get());
-            
+            Assert.IsType<NoContentResult>( await controller.Get());    
         }
 
         [Fact]
@@ -30,6 +29,12 @@ namespace Tests.Controllers
             using(DataContext context = new(optionsBd))
             {
                 context.Database.EnsureDeleted();
+                context.Department.Add(new Department{Name = "Financeiro"});
+                context.Department.Add(new Department{Name = "Administrativo"});
+                await context.SaveChangesAsync();
+            }
+            using(DataContext context = new(optionsBd))
+            {    
                 context.Story.Add( new Story {Title = "The title", Description = "Description",  DepartmentId = 1 });
                 context.Story.Add( new Story {Title = "The title two", Description = "Description two",  DepartmentId = 2 });
                 await context.SaveChangesAsync();
@@ -75,49 +80,43 @@ namespace Tests.Controllers
         [Fact]
         public async void Delete_ReturnOK_When_DeleteElement()
         {
-            using (DataContext context = new(optionsBd))
+             using(DataContext context = new(optionsBd))
             {
                 context.Database.EnsureDeleted();
+                context.Department.Add(new Department{Name = "Financeiro"});
+                await context.SaveChangesAsync();
                 context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
-                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
                 await context.SaveChangesAsync();
             }
             using (DataContext context = new DataContext(optionsBd))
             {
                 StoriesController controller = new(new StoryService(context));
-                Assert.IsType<OkResult>(await controller.Delete(2));
+                Assert.IsType<OkResult>(await controller.Delete(1));
             }
         }
 
         [Fact]
         public async void Put_ReturnOK_When_UpdateElement()
         {
-            using (DataContext context = new(optionsBd))
-            { 
+            using(DataContext context = new(optionsBd))
+            {
                 context.Database.EnsureDeleted();
+                context.Department.Add(new Department{Name = "Financeiro"});
+                await context.SaveChangesAsync();
                 context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
-                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
                 await context.SaveChangesAsync();
             }
             using (DataContext context = new(optionsBd))
             {
                 StoriesController controller = new(new StoryService(context));
-                var storyRequest = new StoryRequest { Title = "The title update", Description = "Description update", DepartmentId = 3 };
+                var storyRequest = new StoryRequest { Title = "The title update", Description = "Description update", DepartmentId = 1 };
                 Assert.IsType<OkResult>(controller.Put(1, storyRequest));
             }
         }
 
         [Fact]
-        public async void Put_ReturnNoContent_When_NoContainElement()
+        public void Put_ReturnNoContent_When_NoContainElement()
         {
-            using (DataContext context = new(optionsBd))
-            {
-                context.Database.EnsureDeleted();
-                context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
-                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
-                await context.SaveChangesAsync();
-            }
-
             using (DataContext context = new(optionsBd))
             {
                 StoriesController controller = new(new StoryService(context));
@@ -138,11 +137,12 @@ namespace Tests.Controllers
         [Fact]
         public async void GetById_ReturnOK_When_ContainElement()
         {
-            using (DataContext context = new(optionsBd))
+            using(DataContext context = new(optionsBd))
             {
                 context.Database.EnsureDeleted();
+                context.Department.Add(new Department{Name = "Financeiro"});
+                await context.SaveChangesAsync();
                 context.Story.Add(new Story { Title = "The title", Description = "Description", DepartmentId = 1 });
-                context.Story.Add(new Story { Title = "The title two", Description = "Description two", DepartmentId = 2 });
                 await context.SaveChangesAsync();
             }
             using (DataContext context = new(optionsBd))

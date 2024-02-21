@@ -47,7 +47,9 @@ namespace Stories.API.Controllers
                     Id = s.Id,
                     Voted = s.Voted,
                     UserId = s.UserId,
-                    StoryId = s.StoryId
+                    UserName= s.UserName,
+                    StoryId = s.StoryId,
+                    StoryTitle = s.StoryTitle
                 }).ToList();
                 return Ok(votes);
             }

@@ -11,7 +11,7 @@ namespace Stories.Data.Models
         public bool Voted { get; set; }
         public int StoryId { get; set; }
         public int UserId { get; set; }
-        public Story Story {get; }
         public User User {get;}
+        public Story Story {get;}
     }
 }

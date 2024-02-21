@@ -36,21 +36,19 @@ namespace Stories.Service.Services
         }
         public async Task<IEnumerable<StoryDto>> Get()
         {
-            var stories = await  _context.Story.AsNoTracking().ToListAsync();
-            return stories.Select(s => new StoryDto 
+            var stories =  _context.Story.AsNoTracking().Include(d => d.Department);
+            return  stories.Select(s => new StoryDto 
             {   Id = s.Id, 
                 Title = s.Title, 
                 DepartmentId = s.DepartmentId,
-                Description = s.Description
+                Description = s.Description,
+                DepartmentName = s.Department.Name
             }).ToList();   
         }
         public async Task<bool> Update(StoryDto storyDto)
         {
             var story = _context.Story.FindAsync(storyDto.Id).Result;
-            if (story == null)
-            {
-               return false;
-            }
+            if (story == null) { return false; }
             else
             {
                 story.Description = storyDto.Description;
@@ -65,7 +63,7 @@ namespace Stories.Service.Services
        
         public StoryDto Get(int id)
         {
-            var story = _context.Story.AsNoTracking().FirstOrDefault(s => s.Id == id);
+            var story = _context.Story.AsNoTracking().Include(d => d.Department).FirstOrDefault(s => s.Id == id);
             if (story == null) return null;
             else
             {
@@ -74,6 +72,7 @@ namespace Stories.Service.Services
                     Id = story.Id,
                     Title = story.Title,
                     DepartmentId = story.DepartmentId,
+                    DepartmentName = story.Department.Name,
                     Description = story.Description
                 };
                 return storyDto;
@@ -88,18 +87,21 @@ namespace Stories.Service.Services
                 UserId = voteDto.UserId
             };
             _context.Vote.Add(vote);
-            return ( await SaveChangesAsync(), vote.Id);;
+            return ( await SaveChangesAsync(), vote.Id);
         }
         public async Task<IEnumerable<VoteDto>> GetVotes()
         {
-            var votes = await _context.Vote.AsNoTracking().ToListAsync();
-            return votes.Select(s => new VoteDto
+            IQueryable<Vote> votes =  _context.Vote.AsNoTracking().Include(v => v.Story).Include(v => v.User);
+             return votes.Select(s => new VoteDto
             {
-                Id = s.Id,
+               Id = s.Id,
                StoryId= s.StoryId,
+               StoryTitle = s.Story.Title,
                Voted = s.Voted,
-               UserId= s.UserId
+               UserId= s.UserId,
+               UserName = s.User.Name
             }).ToList();
+            
         }
     }
 }
