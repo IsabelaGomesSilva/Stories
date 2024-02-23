@@ -1,1 +1,32 @@
-<p>dialog works!</p>
+<span mat-dialog-title> {{data.title}} história</span>
+<form action="modal" [formGroup]="myForm" (ngSubmit)="onSubmit()" >
+  <mat-form-field hintLabel="Min 5 characters">
+    <mat-label>Titulo</mat-label>
+    <input matInput  minlength="5" formControlName="title" >
+  </mat-form-field>
+
+  <span class="example-spacer"></span>
+
+  <mat-form-field>
+    <mat-select  placeholder="Departamento:"  formControlName="departmentId">
+      <mat-option *ngFor="let department of departments" [value] = "department.id" required >
+        {{department.name}}
+      </mat-option>
+    </mat-select>        
+    <mat-label> <strong> Departamento</strong> </mat-label>
+  </mat-form-field>   
+
+  <span class="example-spacer-text"></span>
+  
+  <mat-form-field hintLabel="Max 300 characters" class="description">
+    <mat-label>Descrição</mat-label>
+    <textarea matInput  maxlength="300" formControlName="description"></textarea>
+  </mat-form-field>
+
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close color="warn">Cancelar</button>
+  <button mat-stroked-button mat-dialog-close cdkFocusInitial type="submit"  color="primary" >{{data.title}}</button>
+</mat-dialog-actions>
+</form> 
+
+

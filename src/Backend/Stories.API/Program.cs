@@ -3,6 +3,16 @@ using Stories.Data.Context;
 using Stories.Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy( policy  =>
+                      {
+                          policy.AllowAnyOrigin()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                                              
+                      });
+});
 
 // Add services to the container.
 
@@ -18,6 +28,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<StoryService>();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,6 +39,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 
