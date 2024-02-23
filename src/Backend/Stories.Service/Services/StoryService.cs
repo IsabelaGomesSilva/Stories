@@ -91,8 +91,10 @@ namespace Stories.Service.Services
         }
         public async Task<IEnumerable<VoteDto>> GetVotes()
         {
+
             IQueryable<Vote> votes =  _context.Vote.AsNoTracking().Include(v => v.Story).Include(v => v.User);
              return votes.Select(s => new VoteDto
+
             {
                Id = s.Id,
                StoryId= s.StoryId,
