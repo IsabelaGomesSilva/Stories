@@ -1,4 +1,4 @@
-export class departmentViewModel{
+export class DepartmentViewModel{
     id!: Number;
     name!: String;
 }

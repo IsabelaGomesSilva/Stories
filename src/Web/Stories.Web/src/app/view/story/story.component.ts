@@ -2,49 +2,101 @@ import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { StoryService } from '../../service/story/story.service';
-import { storyViewModel } from '../../viewModel/storyViewModel';
+import { StoryViewModel } from '../../viewModel/storyViewModel';
 import {MatButtonModule} from '@angular/material/button';
-import { DepartmentService } from '../../service/department/department.service';
-import { departmentViewModel } from '../../viewModel/departmentViewModel';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogComponent } from '../dialog/dialog.component';
+import {MatIcon, MatIconModule} from '@angular/material/icon'
+import { Router } from '@angular/router';
+import { DialogDeleteComponent } from '../dialog-delete/dialog-delete.component';
+
 
 
 @Component({
   selector: 'app-story',
   standalone: true,
-  imports: [MatTableModule, MatPaginatorModule, MatButtonModule],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, MatIcon],
   templateUrl: './story.component.html',
   styleUrl: './story.component.css'
 })
 export class StoryComponent implements OnInit, AfterViewInit {
-  constructor (private storyService: StoryService, private departmentsService: DepartmentService ) {}
+  constructor (private storyService: StoryService, 
+               private dialog: MatDialog,
+               private router: Router ) {}
   
-  displayedColumns: string[] = ['Id', 'Title', 'Description', 'Department'];
+  displayedColumns: string[] = ['Title', 'Description', 'Department', 'Action'];
  
-  dataSource: MatTableDataSource<storyViewModel> = new MatTableDataSource<storyViewModel>();
+  dataSource: MatTableDataSource<StoryViewModel> = new MatTableDataSource<StoryViewModel>();
+  story!: StoryViewModel;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  departments!: departmentViewModel[];
 
   ngOnInit(){
-    this.getDepartments();
-    
-    this.storyService.Get().subscribe((response: storyViewModel[])  => {
-        if(response)
-        {
-          this.dataSource.data = response;
-          this.ngAfterViewInit();
-        }
-      } ,error => {
-      console.error('Erro ao obter histórias:', error);});
-
-      
+    this.get();
    }
-   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-  }
-  getDepartments() {
-    this.departmentsService.Get().subscribe((response: departmentViewModel[] )  => {this.departments = response},error => {
-      console.error('Erro ao obter departaments:', error);} );
-      console.log(this.departments)
+
+   get(){
+    this.storyService.Get().subscribe((response: StoryViewModel[])  => {
+      if(response)
+      {
+        this.dataSource.data = response;
+        this.ngAfterViewInit();
+      }
+    } ,error => { console.error('Erro ao obter histórias:', error);}); 
+   }
+  updateStory(id: any){
+     this.openDialog(id,'Editar ');
      
   }
+  addStory(){
+    this.openDialog(0,'Adicionar ');
+   }
+
+  deleteStory(id: any){
+    this.storyService.Delete(id).subscribe( response => {
+      if(response)
+      {
+        console.log('História deletada');
+      }
+    } ,error => { console.error('Erro ao obter histórias:', error);}); 
+    this.reload();
+  }
+
+   ngAfterViewInit(): void { this.dataSource.paginator = this.paginator;}
+
+   openDialog(id:any, title: any): void {
+      let dialogResult = this.dialog.open(DialogComponent, {
+      enterAnimationDuration:'1000ms',
+      exitAnimationDuration:'1000ms',
+      data:{
+        title:title,
+        id:id
+      }
+    })
+    dialogResult.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`); 
+      this.reload();
+    });
+  }
+
+  openDeleteDialog(id:any): void {
+    console.log(id);
+    let dialogResult = this.dialog.open(DialogDeleteComponent, {
+    enterAnimationDuration:'0',
+    exitAnimationDuration:'0',
+    data:{
+      id:id
+   }
+  })
+  dialogResult.afterClosed().subscribe(result => {
+    console.log(`Dialog result: ${result}`); 
+     this.reload();
+  });
+}
+  
+
+    reload(){
+      window.location.reload();
+    }
+  
 }

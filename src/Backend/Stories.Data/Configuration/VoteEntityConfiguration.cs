@@ -15,19 +15,21 @@ namespace Stories.Data.Configuration
             builder.Property(v => v.Voted)
                    .IsRequired();
             
-            builder.Property(v => v.UserId)
-                   .IsRequired();
+
+
             builder.HasOne(v => v.User)
-                   .WithMany()
-                   .HasForeignKey(v => v.UserId)  
-                   .HasConstraintName("FK_User_Vote");     
+                  .WithMany()
+                  .HasForeignKey(v => v.UserId)
+                  .HasConstraintName("FK_Vote_User");
 
             builder.Property(v => v.StoryId)
                    .IsRequired();
+            
             builder.HasOne(v => v.Story)
-                   .WithMany()
-                   .HasForeignKey(v => v.StoryId)  
-                   .HasConstraintName("FK_Story_Vote");          
+                  .WithMany()
+                  .HasForeignKey(v => v.StoryId)
+                  .HasConstraintName("FK_Vote_Story");
+                   
 
 
         }

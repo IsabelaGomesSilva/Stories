@@ -87,12 +87,14 @@ namespace Stories.Service.Services
                 UserId = voteDto.UserId
             };
             _context.Vote.Add(vote);
-            return ( await SaveChangesAsync(), vote.Id);;
+            return ( await SaveChangesAsync(), vote.Id);
         }
         public async Task<IEnumerable<VoteDto>> GetVotes()
         {
-            var votes = _context.Vote.AsNoTracking().Include(v => v.Story).Include(v => v.User);
-            return votes.Select(s => new VoteDto
+
+            IQueryable<Vote> votes =  _context.Vote.AsNoTracking().Include(v => v.Story).Include(v => v.User);
+             return votes.Select(s => new VoteDto
+
             {
                Id = s.Id,
                StoryId= s.StoryId,
@@ -101,6 +103,7 @@ namespace Stories.Service.Services
                UserId= s.UserId,
                UserName = s.User.Name
             }).ToList();
+            
         }
     }
 }

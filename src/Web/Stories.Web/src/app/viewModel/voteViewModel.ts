@@ -1,6 +1,8 @@
-export class voteViewModel{
-    Id!: Number;
-    StoryId!: Number;
-    UserId!: Number;
-    Voted!: boolean;
+export class VoteViewModel{
+    id!: Number;
+    storyId!: Number;
+    storyTitle!: string;
+    userId!: Number;
+    userName!:string;
+    voted!: boolean;
 }

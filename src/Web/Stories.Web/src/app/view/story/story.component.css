@@ -1,22 +1,26 @@
 table {
   width: 100%;
 }
-
 .button-new {
  width: 100%;
   max-width: 100%;
 }
-
 .button-new .mat-mdc-button-base {
   margin: 10px 8px 12px 0;
   margin-left: 40%;
 }
-.description{
+.description, .title{
   max-width: 100px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-
-
+.header{
+  margin: 12px 12px 12px 12px;
+}
+.department {
+  width: 30%;
+}
+.action {
+  max-width: 1rem;
+}

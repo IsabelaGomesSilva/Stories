@@ -33,7 +33,10 @@ namespace Stories.Data.Configuration
                    .HasForeignKey(s => s.DepartmentId)
                    .HasConstraintName("FK_Department_Story") ;      
 
-
+            builder.HasOne(s => s.Department)
+                  .WithMany()
+                  .HasForeignKey(s => s.DepartmentId)
+                  .HasConstraintName("FK_Story_Department");
                    
         }
     }

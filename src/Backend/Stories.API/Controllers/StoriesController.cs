@@ -66,6 +66,7 @@ namespace Stories.API.Controllers
                 {
                     Id = story.Id,
                     DepartmentId = story.DepartmentId,
+                    DepartmentName = story.DepartmentName,
                     Description = story.Description,
                     Title = story.Title
                 };
