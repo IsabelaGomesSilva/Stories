@@ -1,4 +1,5 @@
 using System.Net;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Stories.API.Request;
 using Stories.API.ViewModel;
@@ -16,21 +17,24 @@ namespace Stories.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<StoryViewModel>), (int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> Post(StoryRequest storyRequest)
+        public async  Task<ActionResult> Post([FromServices] IMediator mediator, [FromBody] CreateStoryRequest request)
         {
-             StoryDto  storyDto = new()
-             {
-                 Title = storyRequest.Title, DepartmentId = storyRequest.DepartmentId,
-                 Description = storyRequest.Description
-             };
+            //  StoryDto  storyDto = new()
+            //  {
+            //      Title = storyRequest.Title, DepartmentId = storyRequest.DepartmentId,
+            //      Description = storyRequest.Description
+            //  };
              
-            var (isCreated, isCreatedId) = await _service.Add(storyDto);
+            // var (isCreated, isCreatedId) = await _service.Add(storyDto);
          
-            storyDto.Id = isCreatedId;
-            if (!isCreated)
-                 return BadRequest();
-            else
-                 return Created($"api/Stories/{storyDto.Id}", storyDto);
+            // storyDto.Id = isCreatedId;
+
+            var  response =  mediator.Send(request);
+            if (!response.IsCompletedSuccessfully)
+                  return BadRequest();
+             else
+                //  return Created($"api/Stories/{storyDto.Id}", storyDto);
+             return Ok(response);   
         }
 
         [HttpGet]
@@ -59,7 +63,7 @@ namespace Stories.API.Controllers
         public  ActionResult Get(int id)
         {
             var story =  _service.Get(id);
-            if(story == null ) return NoContent();
+            if(story == null ) return NoContent(); 
             else
             {
                 StoryViewModel storyViewModel = new ()
