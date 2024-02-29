@@ -13,7 +13,7 @@ namespace Stories.API.Handlers
         {
             _storyService = storyService;
         }
-        public  Task<StoryViewModel> Handle(CreateStoryRequest request, CancellationToken cancellationToken)
+        public  async Task<StoryViewModel> Handle(CreateStoryRequest request, CancellationToken cancellationToken)
         {
             StoryDto  storyDto =  new()
              {
@@ -22,17 +22,17 @@ namespace Stories.API.Handlers
                  Description = request.Description
              };
              
-             _storyService.Add(storyDto); 
+          var result = await _storyService.Add(storyDto); 
          
-           var result = new StoryViewModel
+           var story = new StoryViewModel
            {
-            Id = storyDto.Id,
+            Id = result,
             Title = storyDto.Title, 
             DepartmentId = storyDto.DepartmentId,
             Description = storyDto.Description
            };
 
-            return Task.FromResult(result) ;
+            return story ;
         }
     }
 }

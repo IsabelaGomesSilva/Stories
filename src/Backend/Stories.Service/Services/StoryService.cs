@@ -27,12 +27,13 @@ namespace Stories.Service.Services
         } 
         
 
-        public async Task<(bool isCreated, int isCreatedId)> Add(StoryDto storyDto)
+        public async Task<int> Add(StoryDto storyDto)
         {
             var story = new Story {Title = storyDto.Title, Description = storyDto.Description,
                                    DepartmentId = storyDto.DepartmentId };
             _context.Story.Add(story);
-            return ( await SaveChangesAsync(), story.Id);
+            await SaveChangesAsync();
+            return (story.Id);
         }
         public async Task<List<StoryDto>> Get()
         {

@@ -4,7 +4,7 @@ using Stories.Service.Services;
 
 namespace Stories.API.Handlers
 {
-    public class DeleteStoryHandler : IRequestHandler<DeleteStoryRequest, bool>
+    public class DeleteStoryHandler : IRequestHandler<DeleteStoryRequest, bool?>
     {
         private readonly StoryService _storyService;
 
@@ -12,11 +12,12 @@ namespace Stories.API.Handlers
         {
             _storyService = storyService;
         }
-        public Task<bool> Handle(DeleteStoryRequest request, CancellationToken cancellationToken)
+        public  async Task<bool?> Handle(DeleteStoryRequest request, CancellationToken cancellationToken)
         {
-             if (_storyService.Get(request.Id) == null) 
-                return null;
-            return _storyService.Delete(request.Id);
+             if ( _storyService.Get(request.Id) == null) 
+                return  null;
+             else
+                return await _storyService.Delete(request.Id);
             
         }
     }

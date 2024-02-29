@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Stories.API.Request;
 using Stories.API.ViewModel;
-using Stories.Service.Services;
 
 namespace Stories.API.Controllers
 {
@@ -11,7 +10,6 @@ namespace Stories.API.Controllers
     [Route("api/[controller]")]
     public class StoriesController : ControllerBase
     {
-        
         public StoriesController(){}
 
         [HttpPost]
@@ -19,12 +17,11 @@ namespace Stories.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async  Task<ActionResult> Post([FromServices] IMediator mediator, [FromBody] CreateStoryRequest request)
         {
-            var  response =  mediator.Send(request);
-            if (!response.IsCompletedSuccessfully)
+            var  response = await mediator.Send(request);
+            if (response.Id < 0 )
                   return BadRequest();
              else
-                //  return Created($"api/Stories/{storyDto.Id}", storyDto);
-             return Ok(response);   
+                 return CreatedAtAction(nameof(GetById), new{response.Id}, null);     
         }
 
         [HttpGet]
@@ -33,17 +30,17 @@ namespace Stories.API.Controllers
         public async Task<ActionResult> Get([FromServices] IMediator mediator)
         {
             GetAllStoriesRequest request = new();
-            var stories = mediator.Send(request);
+            var stories = await mediator.Send(request);
             if (stories == null )
                return NoContent();
             else
-               return Ok(stories.Result);   
+               return Ok(stories);   
         }
         
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(IEnumerable<StoryViewModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public  ActionResult Get(int id,[FromServices] IMediator mediator )
+        public  ActionResult GetById(int id,[FromServices] IMediator mediator )
         {
             GetByIdStoryRequest request = new (){ Id = id};
             var story = mediator.Send(request);
@@ -61,11 +58,11 @@ namespace Stories.API.Controllers
         public async Task<ActionResult> Delete(int id, [FromServices] IMediator mediator)
         {
             DeleteStoryRequest request = new (){ Id = id};
-            var response = mediator.Send(request);
+            var response = await mediator.Send(request);
 
             if (response == null)
                 return NoContent();
-            else if (! response.IsCompletedSuccessfully)
+            else if (!response.Value)
                 return BadRequest();
             else
                 return Ok();
