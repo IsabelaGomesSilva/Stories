@@ -22,7 +22,7 @@ namespace Stories.API.Handlers
                  Description = request.Description
              };
              
-             _storyService.Add(storyDto);
+             _storyService.Add(storyDto); 
          
            var result = new StoryViewModel
            {

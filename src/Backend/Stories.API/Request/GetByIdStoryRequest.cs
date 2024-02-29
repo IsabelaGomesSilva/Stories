@@ -7,9 +7,8 @@ using Stories.API.ViewModel;
 
 namespace Stories.API.Request
 {
-    public class UpdateStoryRequest : IRequest<bool>
+    public class GetByIdStoryRequest : IRequest<StoryViewModel>
     {
-        public int Id { get; set; }
-        public UpdateBodyStoryRequest Body {get; set;} 
+        public int Id { get; set; } 
     }
 }
