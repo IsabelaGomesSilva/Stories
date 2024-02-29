@@ -15,6 +15,7 @@ namespace Stories.Data.Configuration
             builder.Property(v => v.Voted)
                    .IsRequired();
             
+
             builder.Property(v => v.UserId)
                    .IsRequired();
             builder.HasOne<User>() //ATUALIZADO 
@@ -31,11 +32,6 @@ namespace Stories.Data.Configuration
                    .HasConstraintName("FK_User_Vote");    
             */          
 
-            builder.HasOne(v => v.User)
-                  .WithMany()
-                  .HasForeignKey(v => v.UserId)
-                  .HasConstraintName("FK_Vote_User");
-
             builder.Property(v => v.StoryId)
                    .IsRequired();
             
@@ -44,6 +40,7 @@ namespace Stories.Data.Configuration
                   .HasForeignKey(v => v.StoryId)
                   .HasConstraintName("FK_Vote_Story");
                    
+
 
         }
     }
