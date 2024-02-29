@@ -11,24 +11,14 @@ namespace Stories.API.Controllers
     [Route("api/[controller]")]
     public class StoriesController : ControllerBase
     {
-        private readonly StoryService _service;
-        public StoriesController(StoryService storyService) => _service = storyService;
+        
+        public StoriesController(){}
 
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<StoryViewModel>), (int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async  Task<ActionResult> Post([FromServices] IMediator mediator, [FromBody] CreateStoryRequest request)
         {
-            //  StoryDto  storyDto = new()
-            //  {
-            //      Title = storyRequest.Title, DepartmentId = storyRequest.DepartmentId,
-            //      Description = storyRequest.Description
-            //  };
-             
-            // var (isCreated, isCreatedId) = await _service.Add(storyDto);
-         
-            // storyDto.Id = isCreatedId;
-
             var  response =  mediator.Send(request);
             if (!response.IsCompletedSuccessfully)
                   return BadRequest();
@@ -40,53 +30,42 @@ namespace Stories.API.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<StoryViewModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<ActionResult> Get()
+        public async Task<ActionResult> Get([FromServices] IMediator mediator)
         {
-            var stories = await _service.Get();
-            if(!stories.Any()) return NoContent();
+            GetAllStoriesRequest request = new();
+            var stories = mediator.Send(request);
+            if (stories == null )
+               return NoContent();
             else
-            {
-                _ = stories.Select(s => new StoryViewModel
-                {
-                    Id = s.Id,
-                    DepartmentId = s.DepartmentId,
-                    DepartmentName = s.DepartmentName,
-                    Description = s.Description,
-                    Title = s.Title
-                }).ToList();
-             return Ok(stories); 
-            } 
+               return Ok(stories.Result);   
         }
+        
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(IEnumerable<StoryViewModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public  ActionResult Get(int id)
+        public  ActionResult Get(int id,[FromServices] IMediator mediator )
         {
-            var story =  _service.Get(id);
+            GetByIdStoryRequest request = new (){ Id = id};
+            var story = mediator.Send(request);
+            
             if(story == null ) return NoContent(); 
             else
-            {
-                StoryViewModel storyViewModel = new ()
-                {
-                    Id = story.Id,
-                    DepartmentId = story.DepartmentId,
-                    DepartmentName = story.DepartmentName,
-                    Description = story.Description,
-                    Title = story.Title
-                };
-             return Ok(storyViewModel); 
-            } 
+              return Ok(story.Result); 
+            
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int id, [FromServices] IMediator mediator)
         {
-            if (_service.Get(id) == null)
+            DeleteStoryRequest request = new (){ Id = id};
+            var response = mediator.Send(request);
+
+            if (response == null)
                 return NoContent();
-            else if (! await _service.Delete(id))
+            else if (! response.IsCompletedSuccessfully)
                 return BadRequest();
             else
                 return Ok();
@@ -96,21 +75,19 @@ namespace Stories.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public ActionResult Put(int id, StoryRequest storyRequest)
+        public ActionResult Put(int id, [FromServices] IMediator mediator, [FromBody] UpdateBodyStoryRequest bodyRequest)
         {
-            if (_service.Get(id) == null)
-                return NoContent();
+            UpdateStoryRequest request = new()
+            {
+                Id = id,
+                Body = bodyRequest
+            };
+
+            var response = mediator.Send(request);
+            if (response == null) return NoContent();
             else
             {
-                StoryDto storyDto = new()
-                {
-                    Id = id,
-                    Title = storyRequest.Title,
-                    DepartmentId = storyRequest.DepartmentId,
-                    Description = storyRequest.Description
-                };
-
-                if (!_service.Update(storyDto).Result)
+                if (!response.IsCompletedSuccessfully)
                     return BadRequest();
                 else
                     return Ok();

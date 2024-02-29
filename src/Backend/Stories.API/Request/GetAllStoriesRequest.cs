@@ -7,8 +7,8 @@ using Stories.API.ViewModel;
 
 namespace Stories.API.Request
 {
-    public class DeleteStoryRequest : IRequest<bool>
+    public class GetAllStoriesRequest : IRequest<List<StoryViewModel>>
     {
-        public int Id { get;  set; }   
+        
     }
 }

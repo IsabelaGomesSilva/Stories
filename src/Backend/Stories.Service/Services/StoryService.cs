@@ -34,7 +34,7 @@ namespace Stories.Service.Services
             _context.Story.Add(story);
             return ( await SaveChangesAsync(), story.Id);
         }
-        public async Task<IEnumerable<StoryDto>> Get()
+        public async Task<List<StoryDto>> Get()
         {
             var stories =  _context.Story.AsNoTracking().Include(d => d.Department);
             return  stories.Select(s => new StoryDto 
