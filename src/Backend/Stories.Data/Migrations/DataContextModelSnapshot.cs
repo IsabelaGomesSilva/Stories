@@ -120,6 +120,7 @@ namespace Stories.Data.Migrations
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
+
                         .HasConstraintName("FK_Story_Department");
 
                     b.Navigation("Department");
@@ -132,14 +133,18 @@ namespace Stories.Data.Migrations
                         .HasForeignKey("StoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
+
                         .HasConstraintName("FK_Vote_Story");
+
 
                     b.HasOne("Stories.Data.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
+
                         .HasConstraintName("FK_Vote_User");
+
 
                     b.Navigation("Story");
 
