@@ -9,6 +9,5 @@ namespace Stories.API.Request
 {
     public class GetAllStoriesRequest : IRequest<List<StoryViewModel>>
     {
-        
     }
 }

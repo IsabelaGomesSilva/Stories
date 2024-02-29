@@ -10,6 +10,6 @@ namespace Stories.API.Request
     {
        public string Title { get; set; }
        public string Description { get; set; }
-       public int DepartmentId { get; set; }
+       public int DepartmentId { get; set; } 
     }
 }

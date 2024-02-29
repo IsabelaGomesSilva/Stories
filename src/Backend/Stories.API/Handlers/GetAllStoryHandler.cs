@@ -28,7 +28,7 @@ namespace Stories.API.Handlers
             return  stories.Select(s => new StoryViewModel
                 {
                     Id = s.Id,
-                    DepartmentId = s.DepartmentId,
+                    DepartmentId = s.DepartmentId, 
                     DepartmentName = s.DepartmentName,
                     Description = s.Description,
                     Title = s.Title

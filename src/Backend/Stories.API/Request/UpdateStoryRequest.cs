@@ -10,6 +10,6 @@ namespace Stories.API.Request
     public class UpdateStoryRequest : IRequest<bool>
     {
         public int Id { get; set; }
-        public UpdateBodyStoryRequest Body {get; set;}
+        public UpdateBodyStoryRequest Body {get; set;} 
     }
 }

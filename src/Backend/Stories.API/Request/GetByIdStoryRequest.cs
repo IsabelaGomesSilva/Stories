@@ -9,6 +9,6 @@ namespace Stories.API.Request
 {
     public class GetByIdStoryRequest : IRequest<StoryViewModel>
     {
-        public int Id { get; set; }
+        public int Id { get; set; } 
     }
 }

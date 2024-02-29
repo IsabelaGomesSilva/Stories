@@ -25,7 +25,7 @@ namespace Stories.API.Handlers
                     Title = request.Body.Title,
                     DepartmentId = request.Body.DepartmentId,
                     Description = request.Body.Description
-                };
+                }; 
                     return _storyService.Update(storyDto);
     
             }

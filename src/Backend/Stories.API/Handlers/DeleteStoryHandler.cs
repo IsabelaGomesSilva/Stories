@@ -14,7 +14,7 @@ namespace Stories.API.Handlers
         }
         public Task<bool> Handle(DeleteStoryRequest request, CancellationToken cancellationToken)
         {
-             if (_storyService.Get(request.Id) == null)
+             if (_storyService.Get(request.Id) == null) 
                 return null;
             return _storyService.Delete(request.Id);
             

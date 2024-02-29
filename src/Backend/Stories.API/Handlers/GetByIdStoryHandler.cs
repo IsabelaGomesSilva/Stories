@@ -17,7 +17,7 @@ namespace Stories.API.Handlers
         {
              var story =  _storyService.Get(request.Id);
             if(story == null ) return null; 
-            else
+            else 
             {
                 StoryViewModel storyViewModel = new ()
                 {

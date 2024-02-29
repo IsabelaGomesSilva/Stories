@@ -79,7 +79,7 @@ namespace Stories.API.Controllers
         {
             UpdateStoryRequest request = new()
             {
-                Id = id,
+                Id = id, 
                 Body = bodyRequest
             };
 

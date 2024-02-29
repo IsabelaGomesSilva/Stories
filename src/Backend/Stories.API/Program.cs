@@ -20,6 +20,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<CreateStoryHandler>();
+builder.Services.AddTransient<GetAllStoryHandler>();
+builder.Services.AddTransient<GetByIdStoryHandler>();
+builder.Services.AddTransient<DeleteStoryHandler>();
+builder.Services.AddTransient<UpdateStoryHandler>();
+
 builder.Services.AddMediatR( add => add.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -33,7 +38,7 @@ builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<StoryService>();
 
 
-var app = builder.Build();
+var app = builder.Build(); 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
